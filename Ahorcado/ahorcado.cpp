@@ -1,4 +1,8 @@
 #include <iostream>
+#include <vector>
+#include <fstream>
+#include <string>
+#include <time.h>
 
 using namespace std;
 
@@ -25,7 +29,7 @@ void EscribirMensaje(string mensaje, bool escribeArriba = true, bool escribeAbaj
     cout << mensaje.c_str();
 
     if (escribeAbajo){
-        cout << "I"<< endl; // debe de haber un salto de linea para que salga más abajo la siguiente linea
+        cout << "I"<< endl; // debe de haber un salto de linea para que salga mÃ¡s abajo la siguiente linea
         cout << "+-----------------------------------------+" << endl;
     }else{
         cout << "I" << endl; // al poner este salto de linea la segunad cuerda (I) se coloca debajo
@@ -134,7 +138,7 @@ void EscribirLetras(string mensaje, bool escribeArriba = true, bool escribeAbajo
     cout << mensaje.c_str();
 
     if (escribeAbajo){
-        cout << "I"<< endl; // debe de haber un salto de linea para que salga más abajo la siguiente linea
+        cout << "I"<< endl; // debe de haber un salto de linea para que salga mÃ¡s abajo la siguiente linea
         cout << "+-----------------------------------------+" << endl;
     }else{
         cout << "I" << endl; // al poner este salto de linea la segunad cuerda (I) se coloca debajo
@@ -196,7 +200,7 @@ void EscribirAbecedario2(string mensaje, bool escribeArriba = true, bool escribe
     cout << mensaje.c_str();
 
     if (escribeAbajo){
-        cout << "I"<< endl; // debe de haber un salto de linea para que salga más abajo la siguiente linea
+        cout << "I"<< endl; // debe de haber un salto de linea para que salga mÃ¡s abajo la siguiente linea
         cout << "+-----------------------------------------+" << endl;
     }else{
         cout << "I" << endl; // al poner este salto de linea la segunad cuerda (I) se coloca debajo
@@ -251,24 +255,90 @@ void EscribirMensaje2(string mensaje, bool escribeArriba = true, bool escribeAba
     cout << mensaje.c_str();
 
     if (escribeAbajo){
-        cout << "I"<< endl; // debe de haber un salto de linea para que salga más abajo la siguiente linea
+        cout << "I"<< endl; // debe de haber un salto de linea para que salga mÃ¡s abajo la siguiente linea
         cout << "+-----------------------------------------+" << endl;
     }else{
         cout << "I" << endl; // al poner este salto de linea la segunad cuerda (I) se coloca debajo
     }
 }
 
+string CargarPalabrasRandom(string huecos){
+
+    int lineaContador = 0;
+    string palabra;
+    vector<string> a;
+    ifstream leer(huecos);
+    if (leer.is_open()){
+
+        while (std::getline(leer, palabra)){
+
+            a.push_back(palabra);
+
+            int lineaRandom = rand() % a.size();
+
+            palabra = a.at(lineaRandom);
+            leer.close();
+        }
+        return palabra;
+    }
+
+
+}
+
+int IntentosIzquuierda(string palabra, string adivinar){
+
+    int error = 0;
+    for (int i=0; i < adivinar.length(); i++){
+
+        if(palabra.find(adivinar[i]) == string::npos);
+            error++;
+    }
+    return error;
+
+}
+
+
 
 int main(){
-    string adivinar = "ABHJIKKLL";
+    srand(time(0));
+    string adivinar;
+    string adivinarPalabra;
 
-    EscribirMensaje("JUEGO DEL AHORCADO"); // escribe el mensaje en el centro del cuadrado que lo rodea
-    DibujoAhorcado(9); // dibuja el numero de lineas que estan marcados en el if
-    EscribirLetras("LETRAS DISPONIBLES");
-    EscribirAbecedario1(" A B C D E F G H I J K L M ");
-    EscribirAbecedario2(" N O P Q R S T U V W X Y Z ");
-    EscribirMensaje2("ADIVINA LA PALABRA");
-    EscribirPalabraCompruebaGana("ALEXES", adivinar);
+    adivinarPalabra = CargarPalabrasRandom ("PALABRAS AHORCADO.txt");
+    int intentos = 0;
+    bool ganar = false;
+    do{
+
+        system("cls");
+        EscribirMensaje("JUEGO DEL AHORCADO"); // escribe el mensaje en el centro del cuadrado que lo rodea
+        DibujoAhorcado(intentos);
+        EscribirAbecedario1(" A B C D E F G H I J K L M ");
+        EscribirAbecedario2(" N O P Q R S T U V W X Y Z ");
+        EscribirMensaje2("ADIVINA LA PALABRA");
+        ganar = EscribirPalabraCompruebaGana(adivinarPalabra, adivinar);
+
+        if(ganar)
+            break;
+
+        char x;
+
+        cout << ">";
+        cin >> x;
+
+        if(adivinar.find(x) == string::npos)
+
+            adivinar += x;
+
+        intentos = IntentosIzquuierda(adivinarPalabra, adivinar);
+
+    }while(intentos < 10);
+
+    if(ganar)
+        EscribirMensaje("HAS GANADO!!");
+    else
+        EscribirMensaje("HAS PERDIDO");
+
+
     getchar();
     return 0;
 
